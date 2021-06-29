@@ -8,8 +8,8 @@ import os
 
 rule trim:
     output:
-        fq1=temp(config['workspace'] + '/samples/{sample}/preprocess/{library}_r1_trimed.fq.gz'),
-        fq2=temp(config['workspace'] + '/samples/{sample}/preprocess/{library}_r2_trimed.fq.gz'),
+        fq1=config['workspace'] + '/samples/{sample}/preprocess/{library}_r1_trimed.fq.gz',
+        fq2=config['workspace'] + '/samples/{sample}/preprocess/{library}_r2_trimed.fq.gz',
         json=config['workspace'] + '/samples/{sample}/qc/{library}_fastp.json',
         html=config['workspace'] + '/samples/{sample}/qc/{library}_fastp.html'
     input:

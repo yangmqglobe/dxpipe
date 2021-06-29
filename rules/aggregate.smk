@@ -14,7 +14,7 @@ def find_all_library(wildcards):
 
 rule count:
     output:
-        temp(config['workspace'] + '/aggregate/{sample}_raw_count.txt')
+        config['workspace'] + '/aggregate/{sample}_raw_count.txt'
     input:
         find_all_library
     log:
@@ -91,7 +91,8 @@ rule merge_count:
 
 rule comparisons:
     output:
-        config['workspace'] + '/aggregate/comparisons.txt'
+        config['workspace'] + '/aggregate/comparisons.txt',
+        config['workspace'] + '/aggregate/metadata.txt'
     input:
         rules.merge_count.output
     run:
@@ -99,6 +100,7 @@ rule comparisons:
 
         meta = {sample: meta['meta'] for sample, meta in config['samples'].items()}
         meta = pd.DataFrame.from_dict(meta, orient='index')
+        meta.to_csv(output[1], sep='\t')
 
         meta_cols = list({
             comparison['condition'] for comparison in config['comparisons'].values()
@@ -114,7 +116,7 @@ rule pcaplot:
     output:
         config['workspace'] + '/aggregate/all_sample_{set}_pcaplot.{fmt}',
     input:
-        rules.comparisons.output,
+        rules.comparisons.output[0],
         config['workspace'] + '/aggregate/all_sample_{set}_fpkm_qnorm.txt'
     params:
         script=lambda wildcards: f'{BASE_DIR}/tools/pcaplot.R'

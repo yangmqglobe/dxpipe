@@ -19,6 +19,8 @@ rule mapping:
         prefix=config['workspace'] + '/samples/{sample}/mapping/{library}_'
     threads:
         12 if workflow.cores > 12 else workflow.cores
+    priority:
+        10
     shell:
         'STAR --readFilesIn {input.fq1} {input.fq2}'
         ' --outSAMattrRGline ID:{wildcards.library} SM:{wildcards.sample} LB:{wildcards.library} PL:ILLUMINA'
