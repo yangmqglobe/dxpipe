@@ -42,4 +42,67 @@ rule compare:
         script=lambda wildcards: f'{BASE_DIR}/tools/compare.R'
     shell:
         'Rscript {params.script} {input} {output}'
-        
+
+
+
+rule gsea_cls:
+    output:
+        config['workspace'] + '/comparisons/{comparison}/{comparison}_gsea.cls'
+    input:
+        rules.plan.output
+    run:
+        import pandas as pd
+        plan = pd.read_table(input[0], index_col=0)
+        plan = plan[plan['condition'] != 'unuse'].copy()
+        plan = plan.sort_values('condition', ascending=False)
+        num = plan.shape[0]
+
+        condition = config['comparisons'][wildcards.comparison]['condition']
+        numerator = config['comparisons'][wildcards.comparison]['numerator']
+        denominator = config['comparisons'][wildcards.comparison]['denominator']
+
+        condition = [
+            config['samples'][sample]['meta'][condition]
+             for sample, position in plan.itertuples()
+        ]
+
+        with open(output[0], 'w') as f:
+            f.write(f'{num}\t2\t1\n')
+            f.write(f'# {numerator}\t{denominator}\n')
+            f.write('\t'.join(condition))
+
+
+rule gsea_res:
+    output:
+        config['workspace'] + '/comparisons/{comparison}/{comparison}_gsea.txt'
+    input:
+        res=rules.merge_count.output.qnorm_ccds,
+        plan=rules.plan.output
+    run:
+        import pandas as pd
+        plan = pd.read_table(input[1], index_col=0)
+        plan = plan[plan['condition'] != 'unuse'].copy()
+        plan = plan.sort_values('condition', ascending=False)
+
+        res = pd.read_table(input[0], index_col=0)
+        res['Description'] = 'na'
+
+        res[['Description'] + plan.index.tolist()].to_csv(
+            output[0], sep='\t', index_label='NAME'
+        )
+
+
+rule gsea:
+    output:
+        directory(config['workspace'] + '/comparisons/{comparison}/{comparison}_gsea_{geneset}')
+    input:
+        res=rules.gsea_res.output,
+        plan=rules.gsea_cls.output
+    log:
+        config['workspace'] + '/log/comparisons/{comparison}/{comparison}_gsea_{geneset}.log'
+    params:
+        geneset=lambda wildcards: config['genome']['geneset'][wildcards.geneset]
+    shell:
+        'gsea-cli.sh GSEA -res {input.res} -collapse false -permute phenotype'
+        ' -rpt_label {wildcards.comparison}_{wildcards.geneset} -out {output}'
+        ' -cls {input.plan} -gmx {params.geneset} >{log} 2>&1'

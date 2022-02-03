@@ -27,4 +27,8 @@ rule all:
         expand(
             config['workspace'] + '/comparisons/{comparison}/{comparison}_{set}_result.txt',
             comparison=config['comparisons'], set=['all', 'ccds']
+        ),
+        expand(
+            config['workspace'] + '/comparisons/{comparison}/{comparison}_gsea_{geneset}',
+            comparison=config['comparisons'], geneset=config['genome']['geneset']
         )

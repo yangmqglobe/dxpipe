@@ -2,7 +2,7 @@
 
 ## 流程总览
 
-* [ ] ![images/rulegraph.png](images/rulegraph.png)
+![images/rulegraph.png](images/rulegraph.png)
 
 ## 依赖安装
 
@@ -12,6 +12,11 @@
 conda install -n base -c conda-forge mamba
 mamba env create -f environment.yml
 conda activate dxpipe
+```
+
+之后安装GSEA
+```bash
+sh tools/install_gsea.sh
 ```
 
 ## 运行流程
