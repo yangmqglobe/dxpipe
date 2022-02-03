@@ -3,6 +3,9 @@ genome:
   fasta: /share/references/hg38/fasta/hg38.fa
   star_index: /share/references/hg38/star_gencode_v38_index
   gtf: /share/references/hg38/gencode/gencode.v38.annotation.gtf
+  geneset:
+    go: /share/GSEA_GENE_SETS/c5.go.v7.5.1.symbols.gmt
+    kegg: /share/GSEA_GENE_SETS/c2.cp.kegg.v7.5.1.symbols.gmt
 
 # output plots formats
 plot_formats:

@@ -6,7 +6,7 @@
 
 ## 依赖安装
 
-使用mamba自动安装所有依赖（conda的加速替代）
+使用 mamba 自动安装所有依赖（conda 的加速替代）
 
 ```bash
 conda install -n base -c conda-forge mamba
@@ -14,7 +14,7 @@ mamba env create -f environment.yml
 conda activate dxpipe
 ```
 
-之后安装GSEA
+之后安装 GSEA
 ```bash
 sh tools/install_gsea.sh
 ```
@@ -35,4 +35,4 @@ cp dxpipe/config.yaml .
 snakemake --snakefile dapipe/Snakefile -j 10 --configfile config.yaml
 ```
 
-其中的`-j`是允许流程使用的最大进程数。
+其中的 `-j` 是允许流程使用的最大进程数。
